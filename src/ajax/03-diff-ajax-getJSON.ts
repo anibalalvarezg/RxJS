@@ -3,7 +3,7 @@ import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 
-const url = 'https://httpbinss.org/delay/1';
+const url = 'https://httpbin.org/delay/1';
 
 const errorManag = ( resp: AjaxError) => {
     console.warn( 'error: ', resp.message );
