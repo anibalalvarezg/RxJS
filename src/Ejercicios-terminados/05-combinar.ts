@@ -1,62 +1,31 @@
-import { ajax } from 'rxjs/ajax';
-import { switchMap, map } from 'rxjs/operators';
-import { zip, of } from 'rxjs';
-
+import { interval, Subject } from 'rxjs';
+import { take, map } from 'rxjs/operators';
 /**
- * Ejercicio: 
- *  Realizar 2 peticiones HTTP (ajax) una después de otra.
- *  
- *  La primera debe de obtener el personaje de Star Wars:
- *   Luke Skywalker, llamando el endpoint:   /people/1/
+ * Ejercicio: Realizar que los dos observables finales, 
+ * emitan exactamente el mismo valor
  * 
- *  La segunda petición, debe de ser utilizando el objeto
- *  de la petición anterior, y tomar la especie (species),
- *  que es un arreglo de URLs (array), dentro de ese arreglo, 
- *  tomar la primera posición y realizar la llamada a ese URL,
- *  el cual debería de traer información sobre su especie (Human)
+ * Tip: Hot Observable? subjects?
  */
-
-// Respuesta esperada:
-// Información sobre los humanos en el universo de Star Wars
-// Ejemplo de la data esperada
-/*
- { name: "Human", classification: "mammal", designation: "sentient", average_height: "180", skin_colors: "caucasian, black, asian, hispanic", …}
-*/
-
-// Respuesta esperada con Mayor dificultad
-// Retornar el siguiente objeto con la información de ambas peticiones
-// Recordando que se disparan una después de la otra, 
-// con el URL que viene dentro del arreglo de 'species'
-
-// Tip: investigar sobre la función zip: 
-//      Que permite combinar observables en un arreglo de valores
-// https://rxjs-dev.firebaseapp.com/api/index/function/zip
-
-// Ejemplo de la data esperada:
-/*
-    especie: {name: "Human", classification: "mammal", designation: "sentient", average_height: "180", skin_colors: "caucasian, black, asian, hispanic", …}
-    personaje: {name: "Luke Skywalker", height: "172", mass: "77", hair_color: "blond", skin_color: "fair", …}
-*/
-
 
 (() =>{
 
-    // No tocar ========================================================
-    const SW_API = 'https://swapi.co/api';                     
-    const getRequest = ( url: string ) => ajax.getJSON<any>(url);
-    // ==================================================================
+  // == NO TOCAR este bloque ====================
+  const reloj$ = interval(1000).pipe(
+    take(5),
+    map( val => Math.round(Math.random() * 100) )
+  );
+  // No tocar la creación del observable
+  // ============================================
 
-    // Realizar el llamado al URL para obtener a Luke Skywalker
-    getRequest(`${SW_API}/people/1/`).pipe(
-        // Realizar los operadores respectivos aquí
-        switchMap(resp => zip(of(resp), getRequest(resp.species[0]))),
-        map(([personaje,especie])=> ({especie,personaje}))
+  const subject$ = new Subject();
+  
+  reloj$.subscribe(subject$);
+  
+  // Estos dos observables deben de emitir exactamente los mismos valores
+  subject$.subscribe( val => console.log('obs1', val) );
+  subject$.subscribe( val => console.log('obs2', val) );
 
-        
 
-    // NO TOCAR el subscribe ni modificarlo ==
-    ).subscribe( console.log )           // ==
-    // =======================================
 
 
 
